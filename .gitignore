@@ -1,0 +1,11 @@
+.DS_Store
+.project
+trailers/*
+database/*
+*.vscode
+*.json
+*.jpeg
+*.csv
+*.db
+*.json
+client_secrets.json
