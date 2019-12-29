@@ -3,9 +3,11 @@ import csv
 import json
 
 from google.cloud import videointelligence
+from google.cloud import storage
 from google.protobuf.json_format import MessageToJson
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "client_secrets.json"
+
 
 def export_to_json(result):
     json_results = MessageToJson(result, preserving_proto_field_name=True)
@@ -13,7 +15,25 @@ def export_to_json(result):
     with open("./database/output.json", "w") as json_output:
         json.dump(json_results, json_output)
 
-# Prcoess segment level label annotations
+
+def export_to_csv(shot_labels, title):
+    responses = []
+    for shot_label in shot_labels:
+        shots = []
+        count = 0
+        for segments in shot_label.segments:
+            count += 1
+        shots.append(title)
+        shots.append(shot_label.entity.description)
+        shots.append(count)
+        responses.append(shots)
+
+    with open("./database/output.csv", "a") as csv_output:
+        writer = csv.writer(csv_output)
+        writer.writerows(responses)
+
+
+# Process segment level label annotations
 def analyze_segments(result):
     segment_labels = result.annotation_results[0].segment_label_annotations
     for i, segment_label in enumerate(segment_labels):
@@ -40,11 +60,9 @@ def analyze_segments(result):
 
 
 # Process shot level label annotations
-def analyze_shots(result):
+def analyze_shots(result, title):
     shot_labels = result.annotation_results[0].shot_label_annotations
-    responses = []
     for i, shot_label in enumerate(shot_labels):
-        responses.append(shot_label.entity.description)
 
         print("Shot label description: {}".format(shot_label.entity.description))
         for category_entity in shot_label.category_entities:
@@ -66,10 +84,8 @@ def analyze_shots(result):
             print("\tSegment {}: {}".format(i, positions))
             print("\tConfidence: {}".format(confidence))
         print("\n")
-    export_to_json(result)
-    with open("./database/output.csv", "a") as csv_output:
-        writer = csv.writer(csv_output)
-        writer.writerow(responses)
+    # export_to_json(result)
+    export_to_csv(shot_labels, title)
 
 
 def analyze_frames(result):
@@ -92,21 +108,29 @@ def analyze_frames(result):
         responses.append(frame_label.entity.description)
     print(responses)
 
-def analyze_labels(path):
+
+def analyze_labels(path, title):
     # Detects labels given a GCS path
     video_client = videointelligence.VideoIntelligenceServiceClient()
     features = [videointelligence.enums.Feature.LABEL_DETECTION]
     operation = video_client.annotate_video(path, features=features)
-    print("\nProcessing video for label annotations:")
+    print("\nProcessing video for label annotations:" + title)
 
     result = operation.result(timeout=90)
     print("\nFinished processing.")
 
     # analyze_segments(result)
-    analyze_shots(result)
+    analyze_shots(result, title)
     # analyze_frames(result)
 
 
-path = "gs://video-api-bucket/trailer.mp4"
+def analyze_input():
+    bucket = "video-api-bucket"
+    bucket_path = "gs://video-api-bucket/"
+    storage_client = storage.Client()
+    blobs = storage_client.list_blobs(bucket)
+    for file in blobs:
+        analyze_labels(bucket_path + file.name, file.name)
 
-analyze_labels(path)
+
+analyze_input()
