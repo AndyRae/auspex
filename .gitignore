@@ -8,4 +8,6 @@ database/*
 *.csv
 *.db
 *.json
+local_settings.py
 client_secrets.json
+__pycache__/*
