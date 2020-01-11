@@ -7,7 +7,7 @@ from google.cloud import storage
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "client_secrets.json"
 
-
+# uses pytube here to download video to /trailers (could we upload straight to GC?)
 def download_video(title, link):
     print(link)
     try:
@@ -18,6 +18,7 @@ def download_video(title, link):
     time.sleep(10.0)
 
 
+# upload to cloud function
 def upload_blob(bucket_name, source_file_name, destination_blob_name):
 
     storage_client = storage.Client()
@@ -29,6 +30,7 @@ def upload_blob(bucket_name, source_file_name, destination_blob_name):
     print("File {} uploaded to {}.".format(source_file_name, destination_blob_name))
 
 
+# runs through list of csv calling the download_video function
 def csv_download():
     with open("./database/films.csv", "r") as file:
         reader = csv.reader(file, delimiter=",")
@@ -38,6 +40,7 @@ def csv_download():
     print("Downloaded Trailers")
 
 
+# loops through files in /trailers/ and uploads them to google cloud storage
 def csv_upload():
     bucket = "video-api-bucket"
     for file in os.listdir("./trailers/"):
@@ -45,7 +48,3 @@ def csv_upload():
             print(bucket, "./trailers/" + file, file)
             upload_blob(bucket, "./trailers/" + file, file)
     print("Uploaded Trailers")
-
-
-# csv_download()
-csv_upload()
