@@ -11,6 +11,7 @@ pytube = "*"
 google-cloud-storage = "*"
 black = "*"
 pandas = "*"
+requests = "*"
 
 [requires]
 python_version = "3.7"

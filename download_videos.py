@@ -5,6 +5,11 @@ import time
 from pytube import YouTube
 from google.cloud import storage
 
+# Run through a list of films, with trailer links (youtube)
+# Download them via Pytube
+# Then upload them to Google Cloud Storage, for analyzing.
+
+
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "client_secrets.json"
 
 # uses pytube here to download video to /trailers (could we upload straight to GC?)

@@ -6,6 +6,8 @@ from google.cloud import videointelligence
 from google.cloud import storage
 from google.protobuf.json_format import MessageToJson
 
+# Uses Google video API to extract video annotations
+
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "client_secrets.json"
 
 
