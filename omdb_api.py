@@ -1,15 +1,15 @@
-from local_settings import apikey
 import requests
 import time
 import json
 import csv
+import argparse
 from urllib.parse import urlparse
 import pandas as pd
 
-apikey = apikey
-title = urlparse("downton abbey")
+# OMDB api needs an api key
+from local_settings import apikey
 
-#queries omdb api for film
+# Queries omdb api for film
 def get_film_details(title, apikey):
     query = {"apikey": apikey, "plot": "full", "type": "movie", "t": title}
     try:
@@ -20,17 +20,25 @@ def get_film_details(title, apikey):
         with open("./database/log.csv", "r") as log:
             writer = csv.writer(log)
             writer.writerow(title, Exception)
-        continue
 
 
-#loops through a csv to pass to get_film_details then outputs to csv
-def csv_download():
-    with open("./database/films.csv", "r") as file:
+# Loops through a csv to get_film_details then outputs to csv
+def main(file):
+    with open("./database/" + file, "r") as file:
         reader = csv.reader(file, delimiter=",")
         for row in reader:
-            response = get_film_details(row[1], apikey)
+            response = get_film_details(row[0], apikey)
+            row = pd.DataFrame([row])
             df = pd.DataFrame([response])
-            
-            with open("./database/films-omdb.csv", "a", newline='') as output:
-                df.to_csv(output, mode = 'a', header=output.tell()==0)
+            combined = row.join(df)
+
+            with open("./database/films-omdb.csv", "a", newline="") as output:
+                combined.to_csv(output, mode="a", header=output.tell() == 0)
     print("Converted Films")
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Run films through OMDB API")
+    parser.add_argument("file", type=str, help="CSV file in /database/ to use.")
+    args = parser.parse_args()
+    main(args.file)
