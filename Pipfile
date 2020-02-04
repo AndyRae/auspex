@@ -12,6 +12,7 @@ google-cloud-storage = "*"
 black = "*"
 pandas = "*"
 requests = "*"
+tabula-py = "*"
 
 [requires]
 python_version = "3.7"
