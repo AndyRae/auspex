@@ -21,9 +21,12 @@ def main(month, year):
         distributor_element = row.find("span", {"class": "mobile-only distributor"})
         date_element = row.find("h4", {"class": ""})
 
+        # Because how the elements are structured, taking a date row, and the films below it
         if date_element:
-            date = date_element.text
-            week_year = datetime.strptime(date, "%A %d %B %Y").isocalendar()[1]
+            date = datetime.strptime(date_element.text, "%A %d %B %Y").strftime(
+                "%d/%m/%Y"
+            )
+            week_year = datetime.strptime(date, "%d/%m/%Y").isocalendar()[1]
         if title_element:
             title = title_element.text
             distributor = distributor_element.text if distributor_element else ""
@@ -39,10 +42,13 @@ def main(month, year):
     with open("./database/upcoming.csv", "a") as csv_output:
         writer = csv.writer(csv_output)
         header = ["title", "week_year", "distributor", "lf_release_date"]
-        writer.writerow(header)
+
+        if csv_output.tell() == 0:
+            writer.writerow(header)
 
         for item in films_list:
             writer.writerow(item)
+        print("Fetched films")
 
 
 if __name__ == "__main__":

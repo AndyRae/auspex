@@ -21,7 +21,6 @@ def download_video(title, link):
         os.rename(trailer, "./trailers/" + title + ".mp4")
     except KeyError:
         print(title + " returns key error.")
-    # want to return the path to the file in the bucket
 
 
 # upload to cloud function
@@ -34,6 +33,7 @@ def upload_video(bucket_name, source_file_name, destination_blob_name):
     blob.upload_from_filename(source_file_name)
 
     print("File {} uploaded to {}.".format(source_file_name, destination_blob_name))
+    return destination_blob_name + source_file_name
 
 
 # loops through files in /trailers/ and uploads them to google cloud storage
@@ -51,13 +51,12 @@ def main(file):
         reader = csv.reader(file, delimiter=",")
         for row in reader:
             print(row[0])
-            download_video(
-                row[0], row[4]
-            )  # Assuming this is where a trailer link is...
-            upload_video(
+            download_video(row[0], row[4])
+            # Assuming this is where a trailer link is...
+            trailer_cloud_path = upload_video(
                 cloud_bucket, "./trailers/" + row[0] + ".mp4",
             )
-            # then upload it in here....
+            row.append(trailer_cloud_path)
     print("Downloaded Trailers")
 
 
