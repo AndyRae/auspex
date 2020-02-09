@@ -1,9 +1,10 @@
 import os
 import csv
 import time
+import argparse
 from local_settings import cloud_bucket
 
-from pytube import YouTube
+from pytube3 import YouTube
 from google.cloud import storage
 
 # Run through a list of films, with trailer links (youtube)
