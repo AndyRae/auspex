@@ -5,12 +5,14 @@ import csv
 from bs4 import BeautifulSoup
 
 # Keeping the site off version control
-from local_settings import url
+from local_settings import upcoming_url
 
 
 def main(month, year):
     query = {"sort": "date", "startmonth": month, "startyear": year}
-    soup = BeautifulSoup(requests.get(url, params=query).content, "html.parser")
+    soup = BeautifulSoup(
+        requests.get(upcoming_url, params=query).content, "html.parser"
+    )
 
     films_list = []
     for row in soup.find_all("div", {"class": "sche-row"}):
@@ -29,19 +31,25 @@ def main(month, year):
             film.append(week_year)
             film.append(distributor)
             film.append(date)
-
-            films_list.append(film)
+            if "EVENT CINEMA:" in film[0]:
+                continue
+            else:
+                films_list.append(film)
 
     with open("./database/upcoming.csv", "a") as csv_output:
         writer = csv.writer(csv_output)
+        header = ["title", "week_year", "distributor", "lf_release_date"]
+        writer.writerow(header)
 
         for item in films_list:
             writer.writerow(item)
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Gets upcoming films")
-    parser.add_argument("month", type=str, help="Month to use.")
-    parser.add_argument("year", type=str, help="Year to use.")
+    parser = argparse.ArgumentParser(
+        description="Gets upcoming films from online source"
+    )
+    parser.add_argument("month", type=str, help="Month to use. eg. 03")
+    parser.add_argument("year", type=str, help="Year to use. eg. 2020")
     args = parser.parse_args()
     main(args.month, args.year)

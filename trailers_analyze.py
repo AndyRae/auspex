@@ -1,6 +1,7 @@
 import os
 import csv
 import json
+from local_settings import cloud_bucket
 
 from google.cloud import videointelligence
 from google.cloud import storage
@@ -127,8 +128,8 @@ def analyze_labels(path, title):
 
 
 def analyze_input():
-    bucket = "video-api-bucket"
-    bucket_path = "gs://video-api-bucket/"
+    bucket = cloud_bucket
+    bucket_path = "gs://" + bucket + "/"
     storage_client = storage.Client()
     blobs = storage_client.list_blobs(bucket)
     for file in blobs:
