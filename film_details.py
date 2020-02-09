@@ -4,8 +4,6 @@ import time
 import json
 import csv
 import argparse
-from urllib.parse import urlparse
-import pandas as pd
 
 import googleapiclient.discovery
 import googleapiclient.errors
@@ -49,22 +47,54 @@ def get_youtube_link(title):
         return "None"
 
 
-# Loops through a csv to get_film_details then outputs to csv
+# Loops through a csv to get_film_details + trailer link then outputs to csv
 def main(file):
     with open("./database/" + file, "r") as file:
         reader = csv.reader(file, delimiter=",")
+        # Sort the headers
+        sheet_header = next(reader)
+        headers = sheet_header + [
+            "trailer_link",
+            "omdb_title",
+            "year",
+            "rated",
+            "released",
+            "runtime",
+            "genre",
+            "director",
+            "writer",
+            "actors",
+            "plot",
+            "language",
+            "country",
+            "awards",
+            "poster",
+            "ratings",
+            "metascore",
+            "imdbrating",
+            "imdbvotes",
+            "imdbid",
+            "type",
+            "dvd",
+            "boxoffice",
+            "production",
+            "website",
+            "response",
+        ]
         for row in reader:
-            print(row[0])
             omdb = get_film_details(row[0], omdb_apikey)
             trailer = get_youtube_link(row[0])
             row.append(trailer)
-            row = pd.DataFrame([row])
-            omdb_df = pd.DataFrame([omdb])
-            combined = row.join(omdb_df)
+            values = [k for k in omdb.values()]
+            combined = row + values
 
             with open("./database/films-omdb.csv", "a", newline="") as output:
-                combined.to_csv(output, mode="a", header=output.tell() == 0)
-    print("Converted Films")
+                writer = csv.writer(output)
+                if output.tell() == 0:
+                    writer.writerow(headers)
+                writer.writerow(combined)
+
+    print("Added details")
 
 
 if __name__ == "__main__":
