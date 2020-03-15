@@ -16,10 +16,6 @@ MVP workflow is:
 
 ---
 
-* modelling_box_office.py - `For modelling box office data using Tensorflow.` 
-* predicting_box_office.py - `For predicting upcoming releases box office, accessing the Tensorflow model.`
-* clustering_films.py - `For clustering films, finding comparables and reccommendations.`
-
 ### Local_settings.py - Contains:
 
 * omdb_apikey = "" `API key for OMDB`
