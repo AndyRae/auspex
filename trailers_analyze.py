@@ -1,6 +1,7 @@
 import os
 import csv
 import json
+import argparse
 from local_settings import cloud_bucket
 
 from google.cloud import videointelligence
@@ -31,7 +32,7 @@ def export_to_csv(shot_labels, title):
         shots.append(count)
         responses.append(shots)
 
-    with open("./database/output.csv", "a") as csv_output:
+    with open("./database/annotations/" + title + "output.csv", "a") as csv_output:
         writer = csv.writer(csv_output)
         writer.writerows(responses)
 
@@ -136,4 +137,18 @@ def analyze_input():
         analyze_labels(bucket_path + file.name, file.name)
 
 
-analyze_input()
+def main(file):
+    bucket = cloud_bucket
+    bucket_path = "gs://" + bucket + "/"
+    storage_client = storage.Client()   
+    with open("./database/" + file, "r") as file:
+        reader = csv.reader(file, delimiter=",")
+        for row in reader:
+            analyze_labels(row[30], row[0])
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Analyze videos using the Google Video AI")
+    parser.add_argument("file", type=str, help="CSV file in /database/ to use.")
+    args = parser.parse_args()
+    main(args.file)
