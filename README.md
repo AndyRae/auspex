@@ -1,25 +1,19 @@
-# Predicting box office data
+# Auspex
+
+**Data pipeline for predicting box office data.**
+
+A data extraction and transforming pipeline for machine learning. Extracting data from source, adding features (country, director, trailer annotations etc.) through APIs. Also extracts upcoming films for predictions.
 
 MVP workflow is:
 
-* transform_vista.py - `Takes Vista EOD PDF reports, turns them into box_office data in csv.`
-* transform_box_office.py - `Tranforms box_office data, rolling up individual screening days into single films with cumulative box office.`
-* film_details.py - `Adds IMDB data and trailer link to each film.`
-
-* upcoming_releases.py - `Scrapes a popular film UK release date website for upcoming titles + release dates.`
-
----
-
-* trailers_download.py - `Adds Youtube trailers for each film to Google Cloud`
-* trailers_analyze.py - `Analyzes Youtube trailers for annotations - using Google Video AI`
-
+* extract_vista.py - `Extracts box office data from Vista EOD PDF reports.`
+* transform_box_office.py - `Tranforms Vista box office data, grouping + filtering screenings.`
+* transform_imdb.py - `Adds IMDB data and trailer links.`
+* extract_upcoming.py - `Scrapes a popular film UK release date website for upcoming titles + release dates.`
 
 ---
 
-### Local_settings.py - Contains:
-
-* omdb_apikey = "" `API key for OMDB`
-* upcoming_url = "" `URL of UK cinema release website`
-* cloud_bucket = "" `Name of Google Cloud storage bucket`
+* transform_trailers.py - `Adds Youtube trailers for each film to Google Cloud`
+* transform_trailers_analysis.py - `Analyzes Youtube trailers for annotations - using Google Video API`
 
 ---
