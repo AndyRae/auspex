@@ -4,6 +4,8 @@
 
 A data extraction and transforming pipeline for machine learning. Extracting data from source, adding features (country, director, trailer annotations etc.) through APIs. Also extracts upcoming films for predictions.
 
+Essentially used with Vista box office data, and extracting from [UK Box Office](https://github.com/AndyRae/uk-box-office).
+
 MVP workflow is:
 
 * extract_vista.py - `Extracts box office data from Vista EOD PDF reports.`
