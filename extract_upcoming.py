@@ -8,13 +8,13 @@ from bs4 import BeautifulSoup
 from local_settings import upcoming_url
 
 
-def main(month, year):
-    query = {"sort": "date", "startmonth": month, "startyear": year}
+def main(month: str, year: str) -> None:
+    query: dict = {"sort": "date", "startmonth": month, "startyear": year}
     soup = BeautifulSoup(
         requests.get(upcoming_url, params=query).content, "html.parser"
     )
 
-    films_list = []
+    films_list: list = []
     for row in soup.find_all("div", {"class": "sche-row"}):
         film = []
         title_element = row.find("div", {"class": "schedule-film-name--title"})

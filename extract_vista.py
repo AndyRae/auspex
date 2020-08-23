@@ -1,24 +1,27 @@
+# TODO: Completely update this from 2016. Add Pandas, refactor.
+
+
 import tabula
 from datetime import datetime
 import csv
 import os
 
 
-def convert(filename):
+def convert(filename: str) -> None:
     pdf_path = "./database/" + filename
     tabula.convert_into(pdf_path, "data.csv", pages="all", output_format="csv")
 
 
-def format():
-    rows = []
-    screenings = []
+def format() -> None:
+    rows: list = []
+    screeningsL list = []
 
     with open("./database/data.csv", mode="r") as file:
         reader = csv.reader(file, delimiter=",")
         dates = next(reader)
         # turns csv into lists
         for line in reader:
-            row = []
+            row: list = []
             for cell in line:
                 row.append(cell)
             rows.append(row)

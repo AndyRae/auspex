@@ -13,14 +13,15 @@ from google.protobuf.json_format import MessageToJson
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "client_secrets.json"
 
 
-def export_to_json(result):
+def export_to_json(result) -> None:
     json_results = MessageToJson(result, preserving_proto_field_name=True)
 
     with open("./database/output.json", "w") as json_output:
         json.dump(json_results, json_output)
 
 
-def export_to_csv(shot_labels, title):
+# TODO: List annotation / pandas / what's the point of this function?
+def export_to_csv(shot_labels: list, title: str) -> None:
     responses = []
     for shot_label in shot_labels:
         shots = []
@@ -38,7 +39,7 @@ def export_to_csv(shot_labels, title):
 
 
 # Process segment level label annotations
-def analyze_segments(result):
+def analyze_segments(result) -> None:
     segment_labels = result.annotation_results[0].segment_label_annotations
     for i, segment_label in enumerate(segment_labels):
         print("Video label description: {}".format(segment_label.entity.description))
@@ -64,7 +65,7 @@ def analyze_segments(result):
 
 
 # Process shot level label annotations
-def analyze_shots(result, title):
+def analyze_shots(result, title: str) -> None:
     shot_labels = result.annotation_results[0].shot_label_annotations
     for i, shot_label in enumerate(shot_labels):
 
@@ -92,7 +93,7 @@ def analyze_shots(result, title):
     export_to_csv(shot_labels, title)
 
 
-def analyze_frames(result):
+def analyze_frames(result) -> None:
     frame_labels = result.annotation_results[0].frame_label_annotations
     responses = []
     for i, frame_label in enumerate(frame_labels):
@@ -113,7 +114,7 @@ def analyze_frames(result):
     print(responses)
 
 
-def analyze_labels(path, title):
+def analyze_labels(path: str, title: str) -> None:
     # Detects labels given a GCS path
     video_client = videointelligence.VideoIntelligenceServiceClient()
     features = [videointelligence.enums.Feature.LABEL_DETECTION]
@@ -123,12 +124,13 @@ def analyze_labels(path, title):
     result = operation.result(timeout=90)
     print("\nFinished processing.")
 
+    #TODO: This is not a great way to select which type of job to do....
     # analyze_segments(result)
     analyze_shots(result, title)
     # analyze_frames(result)
 
 
-def analyze_input():
+def analyze_input() -> None:
     bucket = cloud_bucket
     bucket_path = "gs://" + bucket + "/"
     storage_client = storage.Client()
@@ -137,7 +139,7 @@ def analyze_input():
         analyze_labels(bucket_path + file.name, file.name)
 
 
-def main(file):
+def main(file: str) -> None:
     bucket = cloud_bucket
     bucket_path = "gs://" + bucket + "/"
     storage_client = storage.Client()   
