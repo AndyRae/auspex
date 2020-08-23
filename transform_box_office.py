@@ -7,8 +7,8 @@ import pandas as pd
 # TODO: Need to ensure box office + admissions columns are integers
 
 # load the csv
-def main(file):
-    df_screenings = pd.read_csv("./database/" + file)
+def main(file: str) -> None:
+    df_screenings: pd.DataFrame = pd.read_csv("./database/" + file)
 
     # filter so we only have week one data and drop screenings column
     is_week_one = df_screenings["week"] == "Week 1"

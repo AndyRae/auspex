@@ -14,7 +14,7 @@ from local_settings import omdb_apikey
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "client_secrets.json"
 
 # Queries omdb api for film
-def get_film_details(title, omdb_apikey):
+def get_film_details(title: str, omdb_apikey: str) -> dict:
     query = {"apikey": omdb_apikey, "plot": "full", "type": "movie", "t": title}
     try:
         r = requests.get("http://www.omdbapi.com/?", params=query, timeout=10)
@@ -27,7 +27,7 @@ def get_film_details(title, omdb_apikey):
 
 
 # Gets Youtube trailer link from Youtube API (if it has one)
-def get_youtube_link(title):
+def get_youtube_link(title: str) -> str:
     api_service_name = "youtube"
     api_version = "v3"
 
@@ -48,7 +48,7 @@ def get_youtube_link(title):
 
 
 # Loops through a csv to get_film_details + trailer link then outputs to csv
-def main(file):
+def main(file: str) -> None:
     with open("./database/" + file, "r") as file:
         reader = csv.reader(file, delimiter=",")
         # Sort the headers

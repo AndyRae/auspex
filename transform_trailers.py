@@ -15,7 +15,7 @@ from google.cloud import storage
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "client_secrets.json"
 
 # uses pytube here to download video to /trailers
-def download_video(title, link):
+def download_video(title: str, link: str) -> None:
     print(link)
     try:
         trailer = YouTube(link).streams.first().download("./trailers/")
@@ -25,7 +25,9 @@ def download_video(title, link):
 
 
 # upload to cloud function
-def upload_video(bucket_name, source_file_name, destination_blob_name):
+def upload_video(
+    bucket_name: str, source_file_name: str, destination_blob_name: str
+) -> str:
 
     storage_client = storage.Client()
     bucket = storage_client.bucket(bucket_name)
@@ -38,7 +40,7 @@ def upload_video(bucket_name, source_file_name, destination_blob_name):
 
 
 # loops through files in /trailers/ and uploads them to google cloud storage
-def csv_upload():
+def csv_upload() -> None:
     for file in os.listdir("./trailers/"):
         if file.endswith(".mp4"):
             print(cloud_bucket, "./trailers/" + file, file)
@@ -47,7 +49,7 @@ def csv_upload():
 
 
 # runs through list of csv calling the download_video function
-def main(file):
+def main(file: str) -> None:
     with open("./database/" + file, "r") as file:
         reader = csv.reader(file, delimiter=",")
         for row in reader:
